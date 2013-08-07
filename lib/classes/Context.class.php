@@ -169,10 +169,11 @@
 
 			if ($base64) {
 				$hash = hash_hmac($algo, $sum, $this->secretKey, false);
-				$hash = base64_encode($base64);
+				$hash = base64_encode($hash);
 			}
 			else
 				$hash = hash_hmac($algo, $sum, $this->secretKey);
+			
 
 			if ($hash != $this->signature) {
 				self::printError(AuthError::SIGNATURE_INTEGRITY_ERROR);
