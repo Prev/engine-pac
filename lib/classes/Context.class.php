@@ -17,11 +17,11 @@
 
 
 		public function init($db_info) {
+			
 			DBHandler::init($db_info);
 
 			$headers = getallheaders();
 			$authorization = $headers['Authorization'];
-			//$authorization = $_GET['Authorization'];
 
 			if (!isset($authorization) || empty($authorization)) {
 				self::printError(AuthError::ATTRIBUTE_MISSING);
@@ -34,27 +34,7 @@
 			$this->checkTimestamp();		// 타임스탬프 체크
 			$this->checkNonce();			// nonce (랜덤 값) DB 체크
 			$this->checkSignature();		// signature 무결성 테스트
-			
-			$this->printJson( (object) array(
-				'success' => true
-			));
-		}
 
-		private function sortUrlVariable($object) {
-			$arr = array();
-			$output = '';
-
-			foreach ($object as $keyname => $value)
-				array_push($arr, array('name'=>$keyname, 'value'=>$value) );
-
-			sort($arr);
-			
-			for ($i=0; $i<count($arr); $i++) {
-				$output .= ($arr[$i]['name']. '=' . $arr[$i]['value']);
-				
-				if ($i+1 != count($arr)) $output .= '&';
-			}
-			return $output;
 		}
 
 		private function initAuthorization($auth) {
@@ -138,7 +118,12 @@
 		}
 
 		private function checkSignature() {
-			$content = $this->sortUrlVariable($_REQUEST);
+			$sum = '';
+			foreach ($this->authorization as $key => $value) {
+				if ($key == 'signature') continue;
+				$sum .= $key . '=' . $value . ',';
+			}
+			$sum = substr($sum, 0, strlen($sum) - 1);
 
 			switch (strtolower($this->authorization->signature_method)) {
 				case 'hmacsha1' :
@@ -163,7 +148,7 @@
 				
 			}
 
-			$hash = hash_hmac($algo, $this->secretKey, $content);
+			$hash = hash_hmac($algo, $sum, $this->secretKey);
 
 			if ($hash != $this->authorization->signature) {
 				self::printError(AuthError::SIGNATURE_INTEGRITY_ERROR);
@@ -172,8 +157,10 @@
 		}
 
 
+		public static function printJson($obj, $success=true) {
+			if (is_array($obj)) $obj = (object) $obj;
+			if ($success === true) $obj->success = true;
 
-		public static function printJson($obj) {
 			$output = JSON_UNESCAPED_UNICODE ? 
 				json_encode2($obj) :
 				json_encode($obj);
@@ -187,8 +174,10 @@
 		public static function printError($code) {
 			$obj = new StdClass();
 			$obj->success = false;
-			$obj->error = new AuthError($code);
 
-			self::printJson($obj);
+			if ($code < 10) $obj->error = new AuthError($code);
+			else if ($code < 20) $obj->error = new ModuleError($code);
+
+			self::printJson($obj, false);
 		}
 	}

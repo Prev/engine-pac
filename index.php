@@ -18,5 +18,8 @@
 
 	$oContext = Context::getInstance();
 	$oContext->init(getDBInfo());
-	
+
+	if ($oContext) {
+		ModuleHandler::initModule();
+	}
 	

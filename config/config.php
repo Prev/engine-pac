@@ -33,4 +33,7 @@
 	require ROOT_DIR . '/lib/others/lib.idiorm.php';
 	require ROOT_DIR . '/lib/classes/Context.class.php';
 	require ROOT_DIR . '/lib/classes/DBHandler.class.php';
+	require ROOT_DIR . '/lib/classes/Error.class.php';
 	require ROOT_DIR . '/lib/classes/AuthError.class.php';
+	require ROOT_DIR . '/lib/classes/ModuleError.class.php';
+	require ROOT_DIR . '/lib/classes/ModuleHandler.class.php';
