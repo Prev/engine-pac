@@ -135,29 +135,44 @@
 					($request_query ? ' ' . urlencode($request_query) : '');
 			
 			switch (strtolower($this->authorization->signature_method)) {
+				case 'hmacsha1b' :
+					$base64 = true;
 				case 'hmacsha1' :
 					$algo = 'sha1';
 					break;
 
+				case 'hmacmd5b' :
+					$base64 = true;
 				case 'hmacmd5' :
 					$algo = 'md5';
 					break;
 
+				case 'hmacsha128b' :
+					$base64 = true;
 				case 'hmacsha128' :
 					$algo = 'sha128';
 					break;
 
+				case 'hmacsha256b' :
+					$base64 = true;
 				case 'hmacsha256' :
 					$algo = 'sha256';
 					break;
 
+				case 'hmacsha512b' :
+					$base64 = true;
 				case 'hmacsha512' :
 					$algo = 'sha512';
 					break;
 				
 			}
 
-			$hash = hash_hmac($algo, $sum, $this->secretKey);
+			if ($base64) {
+				$hash = hash_hmac($algo, $sum, $this->secretKey, false);
+				$hash = base64_encode($base64);
+			}
+			else
+				$hash = hash_hmac($algo, $sum, $this->secretKey);
 
 			if ($hash != $this->signature) {
 				self::printError(AuthError::SIGNATURE_INTEGRITY_ERROR);
