@@ -18,14 +18,10 @@
 
 	$auth->signature = hash_hmac('sha1', $sum, 'EHXV47LCM2ESU578WJPQ8ZMWGO3COB7E170363R6');
 
-	var_dump($sum);
-	var_dump($auth);
-	echo "\n\n\n\n\n\n\n";
-
 	$data = getUrlData('http://127.0.0.1/pac/', ($sum . ',signature=' . $auth->signature));
 	echo $data;
-
-
+	
+	
 	function getRandomAuthKey($count) {
 		$charKey = array(0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 
@@ -50,9 +46,9 @@
 			"Host: ${host}\r\n" .
 			'Authorization: ' . $auth . "\r\n" .
 			'User-Agent: Mozilla/5.0 (Windows NT 6.2; WOW64)'.
-			"\r\n\r\n"
+			"\r\n\r\n" .
+			'adsadasdasdasda'
 		);
-
 
 		while(!feof($fp))
 			$output .= fgets($fp, 1024);	

@@ -119,11 +119,13 @@
 
 		private function checkSignature() {
 			$sum = '';
+			
 			foreach ($this->authorization as $key => $value) {
 				if ($key == 'signature') continue;
-				$sum .= $key . '=' . $value . ',';
+				$sum .= ($key . '=' . $value . ',');
 			}
-			$sum = substr($sum, 0, strlen($sum) - 1);
+			$sum = substr($sum, 0, strlen($sum) - 1) . file_get_contents('php://input');
+
 
 			switch (strtolower($this->authorization->signature_method)) {
 				case 'hmacsha1' :
@@ -154,6 +156,8 @@
 				self::printError(AuthError::SIGNATURE_INTEGRITY_ERROR);
 				exit;
 			}
+
+			var_dump(getallheaders());
 		}
 
 
