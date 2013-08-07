@@ -157,10 +157,15 @@
 					$e = 'Cannot connect to database "'.$info->database_name.'"';
 			}
 			
-			if ($e) Context::printErrorPage(array(
-				'en' => 'Fail connecting database - ' . $e,
-				'kr' => '데이터베이스에 연결에 실패하였습니다 - ' . $e
-			));
+			if ($e) {
+				Context::printJson(array(
+					'success' => false,
+					'error' => (object) array(
+						'message' => 'Cannot init dabase - ' . $e,
+						'code' => -1
+					)
+				), false);
+			}
 
 			self::configure('mysql:host=' . $info->host . ';dbname=' . $info->database_name);
 			self::configure('username', $info->username);

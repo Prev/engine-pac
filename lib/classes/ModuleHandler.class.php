@@ -3,22 +3,32 @@
 	class ModuleHandler {
 
 		public static function initModule() {
-			$module = $_REQUEST['module'];
-			$action = $_REQUEST['action'];
+			$module = basename($_REQUEST['module']);
+			$action = basename($_REQUEST['action']);
 
-			Context::printJson( (object) array(
-				'success' => true
-			));
-
-			/*if (!isset($_REQUEST['module']) || !isset($_REQUEST['action'])) {
+			if (!isset($_REQUEST['module']) || !isset($_REQUEST['action'])) {
 				Context::printError(ModuleError::ATTRIBUTE_MISSING);
 				exit;
 			}
 
-			if (!$module || !is_dir(ROOT_DIR . '/modules/' . $module)) {
+			if (!is_dir(ROOT_DIR . '/modules/' . $module)) {
 				Context::printError(ModuleError::MODULE_NOT_EXISTS);
 				exit;
-			}*/
+			}
+
+			if (!is_file(ROOT_DIR . '/modules/' . $module . '/' . $action . '.php')) {
+				Context::printError(ModuleError::ACTION_NOT_EXISTS);
+				exit;
+			}
+
+			require ROOT_DIR . '/modules/' . $module . '/' . $action . '.php';
+
+			if (!function_exists($action)) {
+				Context::printError(ModuleError::ACTION_NOT_EXISTS);
+				exit;
+			}
+
+			call_user_func($action);
 		}
 
 	}

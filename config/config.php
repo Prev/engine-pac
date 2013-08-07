@@ -5,14 +5,15 @@
 	}
 
 
-	header('Content-Type: application/json');
+	date_default_timezone_set('Asia/Seoul');
 
+	header('Content-Type: application/json');
 
 
 	/**
 	 * Define PAC version
 	 */
-	define('PAC_VERSION', '0.0.1');
+	define('PAC_VERSION', '0.0.2');
 
 	/**
 	 * Define text encoding
@@ -24,7 +25,7 @@
 	 * Define json unescaped unicode
 	 * on false example : \u003Cfoo\u003E
 	 */
-	define('JSON_UNESCAPED_UNICODE', false);
+	define('USE_JSON_UNESCAPED_UNICODE', false);
 
 
 	require ROOT_DIR . '/lib/functions/common.function.php';

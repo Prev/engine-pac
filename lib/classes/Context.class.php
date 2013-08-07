@@ -120,10 +120,15 @@
 		}
 
 		private function checkSignature() {
+			$protocol = empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off' ? 'http' : 'https';
+
+			$request_url = (strpos($_SERVER['REQUEST_URI'], 'http') === 0) ?
+				$_SERVER['REQUEST_URI'] :
+				$request_url = $protocol . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
 			$request_method = $_SERVER['REQUEST_METHOD'];
-			$request_url = $_SERVER['REQUEST_URI'];
 			$request_query = file_get_contents('php://input');
-			
+
 			$sum = $request_method . ' ' .
 					urlencode($request_url) . ' ' .
 					urlencode($this->authorization_raw) .
@@ -165,7 +170,7 @@
 			if (is_array($obj)) $obj = (object) $obj;
 			if ($success === true) $obj->success = true;
 
-			$output = JSON_UNESCAPED_UNICODE ? 
+			$output = USE_JSON_UNESCAPED_UNICODE ? 
 				json_encode2($obj) :
 				json_encode($obj);
 
