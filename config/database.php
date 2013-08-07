@@ -1,5 +1,5 @@
 <?php
-	
+
 	function getDBInfo() {
 		$dt = debug_backtrace();
 		$allow = (defined('ROOT_DIR') && ROOT_DIR . DIRECTORY_SEPARATOR . 'index.php' == $dt[0]['file']);
@@ -10,7 +10,7 @@
 				throw new Exception('SandBox error : call getDBInfo in other file');
 			return;
 		}
-		
+
 		return (object) array(
 			'type' => 'mysql',
 			'host' => 'localhost',
@@ -19,5 +19,5 @@
 			'database_name' => 'pac_test',
 			'prefix' => 'pac_'
 		);
-	
+
 	}
