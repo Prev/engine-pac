@@ -2,26 +2,23 @@
 	
 	header('Content-Type: text/plain');
 
+	$auth = 'consumer_key=YFUO1KLQ9GO8UFQRORZB,' .
+			'signature_method=hmacsha1,' .
+			'nonce=' . getRandomAuthKey(20) . ',' .
+			'timestamp=' . time();
 
-	$auth = new StdClass();
+	$secret_key = 'EHXV47LCM2ESU578WJPQ8ZMWGO3COB7E170363R6';
+	$request_uri = 'http://127.0.0.1/pac/';
 
-	$auth->consumer_key = 'YFUO1KLQ9GO8UFQRORZB';
-	$auth->nonce = getRandomAuthKey(20);
-	$auth->signature_method = 'hmacsha1';
-	$auth->timestamp = time();
+	$hasing_str = 'GET ' .
+		urlencode($request_uri) . ' '.
+		urlencode($auth);
 
-	$sum = '';
-	foreach ($auth as $key => $value) {
-		$sum .= ($key . '=' . $value . ',');
-	}
-	$sum = substr($sum, 0, strlen($sum) - 1);
+	$signature = hash_hmac('sha1', $hasing_str, $secret_key);
 
-	$auth->signature = hash_hmac('sha1', $sum, 'EHXV47LCM2ESU578WJPQ8ZMWGO3COB7E170363R6');
-
-	$data = getUrlData('http://127.0.0.1/pac/', ($sum . ',signature=' . $auth->signature));
-	echo $data;
+	echo getUrlData($request_uri, $auth, $signature);
 	
-	
+
 	function getRandomAuthKey($count) {
 		$charKey = array(0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 
@@ -31,7 +28,7 @@
 		return $str;
 	}
 
-	function getUrlData($url, $auth) {
+	function getUrlData($url, $auth, $signature) {
 		$temp = explode('://', $url);
 		$temp = explode('/', $temp[1]);
 
@@ -45,9 +42,9 @@
 			"GET ${url} HTTP/1.0\r\n" .
 			"Host: ${host}\r\n" .
 			'Authorization: ' . $auth . "\r\n" .
+			'Authorization-Signature: ' . $signature . "\r\n" .
 			'User-Agent: Mozilla/5.0 (Windows NT 6.2; WOW64)'.
-			"\r\n\r\n" .
-			'adsadasdasdasda'
+			"\r\n\r\n"
 		);
 
 		while(!feof($fp))

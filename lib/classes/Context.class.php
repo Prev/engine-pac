@@ -2,7 +2,9 @@
 	
 	class Context {
 
+		private $authorization_raw;
 		private $authorization;
+		private $signature;
 		private $consumerKey;
 		private $secretKey;
 		private $consumerPermission;
@@ -21,14 +23,15 @@
 			DBHandler::init($db_info);
 
 			$headers = getallheaders();
-			$authorization = $headers['Authorization'];
+			$this->authorization_raw = $headers['Authorization'];
+			$this->signature = $headers['Authorization-Signature'];
 
-			if (!isset($authorization) || empty($authorization)) {
+			if (!isset($this->authorization_raw) || empty($this->authorization_raw)) {
 				self::printError(AuthError::ATTRIBUTE_MISSING);
 				exit;
 			}
 
-			$this->initAuthorization($authorization);
+			$this->initAuthorization();
 			
 			$this->initConsumerData();		// 컨슈머 데이터 초기화 및 컨슈머키 존재 체크
 			$this->checkTimestamp();		// 타임스탬프 체크
@@ -37,8 +40,8 @@
 
 		}
 
-		private function initAuthorization($auth) {
-			$auth = explode(',', $auth);
+		private function initAuthorization() {
+			$auth = explode(',', $this->authorization_raw);
 			$obj = new StdClass();
 
 			for ($i=0; $i<count($auth); $i++) { 
@@ -59,7 +62,6 @@
 			if (
 				!isset($obj->consumer_key) ||
 				!isset($obj->nonce) ||
-				!isset($obj->signature) ||
 				!isset($obj->signature_method) ||
 				!isset($obj->timestamp)
 			){
@@ -118,15 +120,15 @@
 		}
 
 		private function checkSignature() {
-			$sum = '';
+			$request_method = $_SERVER['REQUEST_METHOD'];
+			$request_url = $_SERVER['REQUEST_URI'];
+			$request_query = file_get_contents('php://input');
 			
-			foreach ($this->authorization as $key => $value) {
-				if ($key == 'signature') continue;
-				$sum .= ($key . '=' . $value . ',');
-			}
-			$sum = substr($sum, 0, strlen($sum) - 1) . file_get_contents('php://input');
-
-
+			$sum = $request_method . ' ' .
+					urlencode($request_url) . ' ' .
+					urlencode($this->authorization_raw) .
+					($request_query ? ' ' . urlencode($request_query) : '');
+			
 			switch (strtolower($this->authorization->signature_method)) {
 				case 'hmacsha1' :
 					$algo = 'sha1';
@@ -152,12 +154,10 @@
 
 			$hash = hash_hmac($algo, $sum, $this->secretKey);
 
-			if ($hash != $this->authorization->signature) {
+			if ($hash != $this->signature) {
 				self::printError(AuthError::SIGNATURE_INTEGRITY_ERROR);
 				exit;
 			}
-
-			var_dump(getallheaders());
 		}
 
 
