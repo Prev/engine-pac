@@ -5,11 +5,6 @@
 	}
 
 
-	date_default_timezone_set('Asia/Seoul');
-
-	header('Content-Type: application/json');
-
-
 	/**
 	 * Define PAC version
 	 */
@@ -26,6 +21,12 @@
 	 * on false example : \u003Cfoo\u003E
 	 */
 	define('USE_JSON_UNESCAPED_UNICODE', false);
+
+
+
+	date_default_timezone_set('Asia/Seoul');
+	header('Content-Type: application/json; charset=' . TEXT_ENCODING);
+
 
 
 	require ROOT_DIR . '/lib/functions/common.function.php';
