@@ -31,7 +31,7 @@
 
 			$permission = Context::getInstance()->consumerPermission;
 			$permission = explode(',', $permission);
-
+			
 			for ($i=0; $i<count($permission); $i++) { 
 				$permission[$i] = trim($permission[$i]);
 

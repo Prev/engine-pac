@@ -23,6 +23,18 @@
 			
 			DBHandler::init($db_info);
 
+			if (isset($_GET['consumer_key'])) {
+				$row = DBHandler::for_table('consumer')
+					->where('consumer_key', $_GET['consumer_key'])
+					->where('highpass', 1)
+					->find_one();
+
+				if ($row) {
+					$this->consumerPermission = $row->permission;
+					return;
+				}
+			}
+
 			$headers = getallheaders();
 			$this->authorization_raw = $headers['Authorization'];
 			$this->signature = $headers['Authorization-Signature'];
@@ -114,10 +126,14 @@
 			$record = DBHandler::for_table('used_nonce')->create();
 			$record->set(array(
 				'nonce' => $this->authorization->nonce,
-				'expire_time' => date('Y-m-d H:i:s', mktime(date('H', date('i')+1))),
+				'expire_time' => date('Y-m-d H:i:s', time() + 3600),
 				'consumer_key' => $this->authorization->consumer_key
 			));
 			$record->save();
+
+			DBHandler::for_table('used_nonce')
+				->where_raw('expire_time < now()')
+				->delete_many();
 		}
 
 		private function checkSignature() {
