@@ -7,7 +7,8 @@
 		private $signature;
 		private $consumerKey;
 		private $secretKey;
-		private $consumerPermission;
+		
+		public $consumerPermission;
 
 		public static function getInstance() {
 			if(!isset($GLOBALS['__Context__'])) {

@@ -14,6 +14,7 @@
 	$hasing_str = 'GET ' .
 		urlencode($request_uri) . ' '.
 		urlencode($auth);
+		
 
 	$signature = hash_hmac('sha1', $hasing_str, $secret_key);
 

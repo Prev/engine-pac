@@ -28,7 +28,26 @@
 				exit;
 			}
 
-			call_user_func($action);
+
+			$permission = Context::getInstance()->consumerPermission;
+			$permission = explode(',', $permission);
+
+			for ($i=0; $i<count($permission); $i++) { 
+				$permission[$i] = trim($permission[$i]);
+
+				$tempArr = explode('.', $permission[$i]);
+				$pModule = $tempArr[0];
+				$pAction = $tempArr[1];
+
+				if ($permission[$i] == '*' || (($module == $pModule || $pModule == '*') && ($action == $pAction || $pAction == '*'))) {
+					call_user_func($action);
+					exit;
+				}
+			}
+
+			Context::printError(ModuleError::PERMISSION_DENINED);
+			exit;
+			
 		}
 
 	}
