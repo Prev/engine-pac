@@ -1,1 +1,2 @@
 RewriteRule ^(.*?)/(.*)$ ./$1/$2 [L,QSA]
+RewriteRule ^(.*?)/(.*?).php$ ./$1/$2 [L,QSA]
