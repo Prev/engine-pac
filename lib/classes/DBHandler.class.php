@@ -16,6 +16,7 @@
 		static public $prefix;
 
 		static public $primary_keys;
+		static private $db_info;
 
 		// 주로 table prefix 문제를 해결하기 위해 override함
 		// @override
@@ -140,6 +141,8 @@
 
 
 		static public function init($info) {
+			self::$db_info = $info;
+
 			self::$type = $info->type;
 			self::$prefix = $info->prefix;
 			self::$primary_keys = new StdClass();
@@ -152,11 +155,11 @@
 			if (!$e) {
 				$r = mysql_select_db($info->database_name,  self::$db);
 				mysql_query('set names ' . $charset);
-				
+
 				if (!$r)
 					$e = 'Cannot connect to database "'.$info->database_name.'"';
 			}
-			
+
 			if ($e) {
 				Context::printJson(array(
 					'success' => false,
@@ -170,8 +173,18 @@
 			self::configure('mysql:host=' . $info->host . ';dbname=' . $info->database_name);
 			self::configure('username', $info->username);
 			self::configure('password', $info->password);
-
 		}
+
+
+		static public function set_database($dabase_name, $connection_name=parent::DEFAULT_CONNECTION) {
+			$info = self::$db_info;
+			
+			parent::$_db[$connection_name] = array();
+			self::configure('mysql:host=' . $info->host . ';dbname=' . $dabase_name, NULL, $connection_name);
+			self::configure('username', $info->username, $connection_name);
+			self::configure('password', $info->password, $connection_name);
+		}
+
 		
 		static public function escapeString($string) {
 			switch(self::$type) {
