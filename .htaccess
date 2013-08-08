@@ -1,2 +1,4 @@
-RewriteRule ^(.*?)/(.*)$ ./$1/$2 [L,QSA]
-RewriteRule ^(.*?)/(.*?).php$ ./$1/$2 [L,QSA]
+RewriteEngine On
+
+RewriteRule ^(.+)/(.+?).php$ ./index.php?module=$1&action=$2&%{QUERY_STRING} [L,QSA]
+RewriteRule ^(.+)/(.+)$ ./index.php?module=$1&action=$2&%{QUERY_STRING} [L,QSA]
