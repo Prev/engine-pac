@@ -9,7 +9,7 @@
 
 	$secret_key = 'EHXV47LCM2ESU578WJPQ8ZMWGO3COB7E170363R6';
 	//$request_uri = 'http://127.0.0.1/pac/?module=test&action=testAction';
-	$request_uri = 'http://closeapi.dimigo.us/?module=test&action=testAction';
+	$request_uri = 'http://127.0.0.1/pac/?module=test&action=testAction';
 
 	$hasing_str = 'GET ' .
 		urlencode($request_uri) . ' '.
